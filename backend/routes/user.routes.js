@@ -25,12 +25,12 @@ userRoutes.get("/:id", async (req, res) => {
 
 userRoutes.post("/add", async (req, res) => {
     try {
-        const { email, name, password, kycVideo } = req.body;
+        const { email, name, password, phone, kycVideo } = req.body;
         if (!email || !name || !password || !kycVideo) return res.status(400).send({ msg: "All the fields are required" });
         const preCheck = await userModel.findOne({ email });
         if (preCheck) return res.status(400).send({ msg: "User already registered" });
         const hashedPassword = await bcrypt.hash(password, 7);
-        const newUser = new userModel({ email, name, password: hashedPassword,kycVideo });
+        const newUser = new userModel({ email, name, password: hashedPassword, phone, kycVideo });
         const user = await newUser.save();
         const token = jwt.sign({ "userId": user._id },process.env.secretKey);
         res.status(200).send({ msg: "User has been registered", status: "success", token });
