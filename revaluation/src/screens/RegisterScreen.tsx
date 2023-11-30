@@ -7,7 +7,7 @@ import { signupAction } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { launchCamera } from 'react-native-image-picker';
-import { accessKeyId, secretAccessKey, region, bucketName } from '@env';
+import { accessKeyId, secretAccessKey, region, bucketName, url } from '@env';
 import AWS from 'aws-sdk';
 import { readFile } from 'react-native-fs';
 import { decode } from 'base64-arraybuffer';
