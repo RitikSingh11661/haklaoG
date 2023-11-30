@@ -24,8 +24,8 @@ userRoutes.get("/:id", async (req, res) => {
 })
 
 userRoutes.post("/add", async (req, res) => {
+    const { email, name, password, phone, kycVideo } = req.body;
     try {
-        const { email, name, password, phone, kycVideo } = req.body;
         if (!email || !name || !password || !kycVideo) return res.status(400).send({ msg: "All the fields are required" });
         const preCheck = await userModel.findOne({ email });
         if (preCheck) return res.status(400).send({ msg: "User already registered" });
@@ -35,6 +35,7 @@ userRoutes.post("/add", async (req, res) => {
         const token = jwt.sign({ "userId": user._id },process.env.secretKey);
         res.status(200).send({ msg: "User has been registered", status: "success", token });
     } catch (error) {
+        console.log('error',error)
         res.status(400).send({ msg: "Error while registering user" });
     }
 })
