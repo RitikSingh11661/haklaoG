@@ -47,17 +47,20 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
   const handleCaptureVideo = async () => {
     try {
       const video: any = await launchCamera({ mediaType: 'video', durationLimit: 5, cameraType: 'front' });
-      const filename = `${uuid.v4()}-kycVideo.mp4`;
-      setVideoLoading(true);
-      await readFile(video.assets[0].uri, 'base64').then(async (res) => {
-        const arrayBuffer = decode(res);
-        const params = { Bucket: bucketName, Key: filename, Body: arrayBuffer, ContentType: 'video/mp4' };
-        const { Location } = await s3.upload(params).promise();
-        formRef.current.kycVideo = Location;
-      })
+      if(video){
+        const filename = `${uuid.v4()}-kycVideo.mp4`;
+        setVideoLoading(true);
+        await readFile(video?.assets[0]?.uri, 'base64').then(async (res) => {
+          const arrayBuffer = decode(res);
+          const params = { Bucket: bucketName, Key: filename, Body: arrayBuffer, ContentType: 'video/mp4' };
+          const { Location } = await s3.upload(params).promise();
+          formRef.current.kycVideo = Location;
+        })
+      }
       setVideoLoading(false);
     } catch (error) {
       console.error('Error capturing video:', error);
+      setVideoLoading(false);
     }
   };
 

@@ -26,7 +26,6 @@ ios/.xcode.env.local
 #
 build/
 .idea
-.env
 .gradle
 local.properties
 *.iml
@@ -34,6 +33,7 @@ local.properties
 .cxx/
 *.keystore
 !debug.keystore
+.env
 
 # node.js
 #
