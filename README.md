@@ -54,7 +54,7 @@ Backend (.env file)
 Frontend (.env file)
 - localurl: The local development server URL.
 - url: The production backend URL.
-- API_KEY: An API key for a service (mention the service).
+- API_KEY: An API key of Google Cloud Platform for authentication (Optional, It can be ignored now).
 - accessKeyId: Access key ID for AWS S3.
 - secretAccessKey: Secret access key for AWS S3.
 - bucketName: The name of the AWS S3 bucket.
