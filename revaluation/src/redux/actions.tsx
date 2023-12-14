@@ -134,8 +134,8 @@ export const updateUserDetailsAction = async (userId: any, updateObj: Object, di
     try {
         const token = await AsyncStorage.getItem('token');
         const { data } = await axios.patch(`${url}/users/update/${userId}`, updateObj, { headers: { token } });
-        dispatch(updateUserDetailsSuccess(data.data));
-        return data;
+        dispatch(updateUserDetailsSuccess(data?.data));
+        return data?.data;
     } catch (error) {
         console.log('error', error)
         dispatch(updateUserDetailsFailure(error));

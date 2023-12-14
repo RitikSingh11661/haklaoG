@@ -7,7 +7,6 @@ import {getUserDetailsAction, loadingRequestAction } from '../redux/actions';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 const LocationPermissionScreen = () => {
-  const user = useSelector((store: any) => store.user);
   const token = useSelector((store: any) => store.token);
   const locationRequests = useSelector((store: any) => store.locationRequests);
   const locationApprovedRequests = useSelector((store: any) => store.locationApprovedRequests);
@@ -104,9 +103,6 @@ const LocationPermissionScreen = () => {
   );
 
   useEffect(() => {getUserDetailsAction(dispatch)}, []);
-  useEffect(() => {getUserBothLocationsRequestsAction(user,dispatch)}, [user.locationVisibility,user.locationPermissionRequests]);
-
-  console.log('locationRequests',locationRequests)
 
   return (
     <View style={styles.container}>

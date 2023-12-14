@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet,Alert } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useSelector } from 'react-redux';
 // import { useNavigation } from '@react-navigation/native';
 
@@ -42,13 +42,14 @@ const NearByPeopleScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.userContainer}>
             <TouchableOpacity>
-              <Image source={{ uri: item?.profilePicture }} style={styles.profileImage} />
+            <Image source={item?.profilePicture?{uri:item?.profilePicture}:require('../../assets/user.png')} style={styles.profileImage} />
+              {/* <Image source={{ uri: item?.profilePicture }} style={styles.profileImage} /> */}
             </TouchableOpacity>
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{item?.name}</Text>
               <Text style={styles.userState}>{item?.location[item?.location?.length - 1]?.state}</Text>
             </View>
-            <TouchableOpacity style={styles.connectButton} onPress={() =>Alert.alert('Comming soon')}>
+            <TouchableOpacity style={styles.connectButton} onPress={() => Alert.alert('Comming soon')}>
               {/* <Text style={styles.connectButtonText}>Connect</Text> */}
               <Text style={styles.connectButtonText}>View full profile</Text>
             </TouchableOpacity>
