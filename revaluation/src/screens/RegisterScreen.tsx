@@ -4,10 +4,10 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootStackParamList } from '../types';
 import { signupAction } from '../redux/actions';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { launchCamera } from 'react-native-image-picker';
-import { accessKeyId, secretAccessKey, region, bucketName, url } from '@env';
+import { accessKeyId, secretAccessKey, region, bucketName } from '@env';
 import AWS from 'aws-sdk';
 import { readFile } from 'react-native-fs';
 import { decode } from 'base64-arraybuffer';
@@ -27,27 +27,27 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
   const s3 = new AWS.S3(credential);
 
   const handleRegister = async () => {
+    if (!formRef.current.name && !formRef.current.email && !formRef.current.password && !formRef.current.phone) {
+      return Alert.alert('Error', 'Please fill every filled');
+    }
+    if (!formRef.current.kycVideo) return Alert.alert('Error', 'Please record your introduction video');
     setLoading(true);
     try {
-      if (!formRef.current.name && !formRef.current.email && !formRef.current.password && !formRef.current.phone) {
-        return Alert.alert('Error', 'Please fill every filled');
-      }
-      if (!formRef.current.kycVideo) return Alert.alert('Error', 'Please record your introduction video');
       const data = await signupAction(formRef.current, dispatch);
       await AsyncStorage.setItem('token', data?.token);
       setLoading(false);
       navigation.replace('VerificationPending');
-    } catch (error) {
-      // console.log('error', error);
+    } catch (error:any) {
       setLoading(false);
-      Alert.alert('Error', 'Please enter valid email or password')
+      Alert.alert(error?.message, 'Please enter valid email or password')
     }
   };
 
   const handleCaptureVideo = async () => {
     try {
       const video: any = await launchCamera({ mediaType: 'video', durationLimit: 5, cameraType: 'front' });
-      if(video){
+      if(!video?.didCancel){
+        console.log('video',video)
         const filename = `${uuid.v4()}-kycVideo.mp4`;
         setVideoLoading(true);
         await readFile(video?.assets[0]?.uri, 'base64').then(async (res) => {
@@ -59,7 +59,7 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
       }
       setVideoLoading(false);
     } catch (error) {
-      console.error('Error capturing video:', error);
+      // console.error('Error capturing video:', error);
       setVideoLoading(false);
     }
   };

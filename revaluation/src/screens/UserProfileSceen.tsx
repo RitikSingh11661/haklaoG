@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import ReportModel from '../components/ReportModel';
 
 const UserProfileScreen = ({ route, navigation }: any) => {
@@ -9,13 +9,12 @@ const UserProfileScreen = ({ route, navigation }: any) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={{ uri: user?.profilePicture }} style={styles.profileImage} />
+        <Image source={user?.profilePicture ? { uri: user?.profilePicture } : require('../../assets/user.png')} style={styles.profileImage} />
         <Text style={styles.userName}>{user?.name}</Text>
         <Text style={styles.userBio}>{user?.bio}</Text>
       </View>
       <View style={styles.details}>
         <Text style={styles.detailText}>State: {user?.location[user?.location.length - 1].state}</Text>
-        <Text style={styles.detailText}>Contact: {user?.phone}</Text>
       </View>
       <TouchableOpacity style={styles.connectButton} onPress={() => navigation.goBack()}>
         <Text style={styles.connectButtonText}>Go Back</Text>
@@ -23,7 +22,7 @@ const UserProfileScreen = ({ route, navigation }: any) => {
       <TouchableOpacity style={styles.reportButton} onPress={() => setIsReporting(true)}>
         <Text style={styles.reportButtonText}>Report</Text>
       </TouchableOpacity>
-      <ReportModel isReporting={isReporting} againstUserId={user?._id}/>
+      <ReportModel isReporting={isReporting} againstUserId={user?._id} />
     </View>
   );
 };

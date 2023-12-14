@@ -1,7 +1,7 @@
 import React from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
-import { getTokenAction, getUserDetailsAction, getUsersDetailsAction, updateUserDetailsAction } from '../redux/actions';
+import { getTokenAction, getUserDetailsAction, getUsersDetailsAction } from '../redux/actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
@@ -22,14 +22,12 @@ const HomeScreen = ({ navigation }:HomeProps) => {
         if (!user) getUserDetailsAction(dispatch).then((data) => {
           AsyncStorage.setItem('user', JSON.stringify(data))
           if(!data?.verified) return navigation.replace('VerificationPending');
-        });
+        }).catch((err) =>Alert.alert(err.message,'No internet connection, Check your internet'));;
         if (!users) getUsersDetailsAction(dispatch).then(data => AsyncStorage.setItem('users', JSON.stringify(data)));
-        // console.log('user',user)
         if(user && !user?.verified) return navigation.replace('VerificationPending');
       }
     }
     need();
-    // return () => {updateUserDetailsAction(user?._id,{ availableForCall: false},dispatch)}
   }, []);
 
   return (

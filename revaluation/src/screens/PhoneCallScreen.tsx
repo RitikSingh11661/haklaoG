@@ -1,29 +1,24 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { FlatList, StyleSheet, TouchableOpacity, View, Image, Text, Alert } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import call from 'react-native-phone-call';
-import { userCallAction } from '../redux/actions'
+import { getUsersDetailsAction, userCallAction } from '../redux/actions'
 
 export const PhoneCallScreen = ({ navigation }: any) => {
+    const dispatch = useDispatch();
     const user = useSelector((store: any) => store.user);
     const users = useSelector((store: any) => store.users);
     const [filteredUsers, setfilteredUsers] = React.useState([]);
+    const memoizedUsers = useMemo(() => users, [users]);
 
     const handleCall = (phone: String, callee: String) => {
-        const args = {
-            number: phone, // String value with the number to call
-            // prompt & skipCanOpen not working and also included queries in AndroidMenfest.xml
-            // prompt: false, // Optional boolean property. Determines if the user should be prompted prior to the call 
-            // skipCanOpen: true // Skip the canOpenURL check
-        }
-
-        call(args).then(() => {
-            userCallAction(callee)
-        }).catch((error: any) => Alert.alert('Unable to call', error));
+        const args = {number: phone}
+        call(args).then(() =>userCallAction(callee)).catch((error: any) => Alert.alert('Unable to call', error));
     }
 
     React.useEffect(() => {
-        setfilteredUsers(users?.filter((el: any) => el?.availableForCall)?.filter((u: any) => u?._id !== user?._id));
+        getUsersDetailsAction(dispatch);
+        setfilteredUsers(memoizedUsers?.filter((el: any) => el?.availableForCall)?.filter((u: any) => u?._id !== user?._id));
     }, []);
 
     return (
@@ -34,7 +29,7 @@ export const PhoneCallScreen = ({ navigation }: any) => {
                 renderItem={({ item }: any) => (
                     <View style={styles.userContainer}>
                         <TouchableOpacity onPress={() => navigation.navigate('UserProfile', { user: item })}>
-                            <Image source={{ uri: item?.profilePicture }} style={styles.profileImage} />
+                            <Image source={item?.profilePicture?{uri:item?.profilePicture}:require('../../assets/user.png')} style={styles.profileImage} />
                         </TouchableOpacity>
                         <View style={styles.userInfo}>
                             <Text style={styles.userName}>{item?.name}</Text>
