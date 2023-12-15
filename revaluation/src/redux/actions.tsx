@@ -57,7 +57,7 @@ export const getTokenAction = (token: any, dispatch: any) => {
 export const signupAction = async (user: Object, dispatch: any) => {
     dispatch(SignupRequest());
     try {
-        const { data } = await axios.post(`${url}/users/add`, user);
+        const {data} = await axios.post(`${url}/users/add`, user);
         dispatch(SignupSuccess(data))
         return data;
     } catch (error) {

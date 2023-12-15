@@ -16,7 +16,7 @@ const NearByPeopleScreen = () => {
       if (isInState && uState === userState) return u;
       else if (!isInState && uState !== userState) return u;
     }
-  })?.filter((u: any) => u?._id !== user?._id);
+  })?.filter((u: any) => u?._id !== user?._id && u?.verified);
 
   return (
     <View style={styles.container}>
