@@ -18,7 +18,7 @@ export const PhoneCallScreen = ({ navigation }: any) => {
 
     React.useEffect(() => {
         getUsersDetailsAction(dispatch);
-        setfilteredUsers(memoizedUsers?.filter((el: any) => el?.availableForCall)?.filter((u: any) => u?._id !== user?._id));
+        setfilteredUsers(memoizedUsers?.filter((el: any) => el?.availableForCall)?.filter((u: any) => u?._id !== user?._id && u?.verified));
     }, []);
 
     return (

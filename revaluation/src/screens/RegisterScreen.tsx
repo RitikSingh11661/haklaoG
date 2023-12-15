@@ -47,7 +47,6 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
     try {
       const video: any = await launchCamera({ mediaType: 'video', durationLimit: 5, cameraType: 'front' });
       if(!video?.didCancel){
-        console.log('video',video)
         const filename = `${uuid.v4()}-kycVideo.mp4`;
         setVideoLoading(true);
         await readFile(video?.assets[0]?.uri, 'base64').then(async (res) => {

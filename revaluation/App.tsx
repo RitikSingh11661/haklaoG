@@ -3,7 +3,7 @@ import { Image, Switch, Alert, Text, View } from 'react-native';
 import HomeScreen from './src/screens/HomeScreen';
 import MapScreen from './src/screens/MapScreen';
 import { useDispatch, useSelector } from 'react-redux';
-import { getNetworkStatusAction, updateUserDetailsAction } from './src/redux/actions';
+import { getNetworkStatusAction, getUserDetailsAction, updateUserDetailsAction } from './src/redux/actions';
 import { NavigationContainer } from '@react-navigation/native';
 import NearByPeopleScreen from './src/screens/NearByPeopleScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -25,16 +25,15 @@ const App = () => {
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator<RootStackParamList>();
   const user = useSelector((store: any) => store.user);
+  const token = useSelector((store: any) => store.token);
   const dispatch = useDispatch();
   const [isEnabledCall, setIsEnabledCall] = useState<boolean>(user?.availableForCall||false);
   const [isConnected, setIsConnected] = React.useState<any>(true);
 
-  // console.log('user?.availableForCall',user?.availableForCall)
-
   const toggleSwitch = async() => {
     try {
       await updateUserDetailsAction(user?._id, { availableForCall: !isEnabledCall }, dispatch);
-      Alert.alert('Status updated successfully',`Hi ${user.name} , you are now ${user?.availableForCall?'Online':'Offline'}!`)
+      // Alert.alert('Status updated successfully',`Hi ${user.name} , you are now ${user?.availableForCall?'Online':'Offline'}!`)
       setIsEnabledCall(!isEnabledCall);
     } catch (err:any) {
       Alert.alert(err.message,'No internet connection, Check your internet')
@@ -45,11 +44,11 @@ const App = () => {
   const getTabBarIcon = (route: any, focused: any) => {
     let iconName = '';
 
-    if (route.name === 'TabHome') {
+    if (route.name === 'Home Page') {
       iconName = focused ? 'https://i.ibb.co/p4yQt4t/home.png' : 'https://i.ibb.co/bWzq4W9/home-1.png';
-    } else if (route.name === 'NearByPeople') {
+    } else if (route.name === 'Near By People') {
       iconName = focused ? 'https://i.ibb.co/zn93wPc/group-users-1.png' : 'https://i.ibb.co/y4Rvjgg/group-users.png';
-    } else if (route.name === 'PhoneCall') {
+    } else if (route.name === 'Practice') {
       iconName = focused ? 'https://i.ibb.co/BcWhPVR/phone-call-1.png' : 'https://i.ibb.co/mTcZC3L/phone-call.png';
     } else if (route.name === 'Settings') {
       iconName = focused ? 'https://i.ibb.co/Rv54Zqb/settings2.png' : 'https://i.ibb.co/jRjJRBF/settings.png';
@@ -75,9 +74,9 @@ const App = () => {
 
   const TabNavigator = () => (
     <Tab.Navigator screenOptions={({route})=>({tabBarIcon:({focused})=>getTabBarIcon(route, focused)})}>
-      <Tab.Screen name="TabHome" options={{ headerTitle: 'Home', headerTitleStyle: { fontWeight: 'bold' }, headerRight: () => HeaderRightSwitch() }} component={HomeScreen} />
-      <Tab.Screen name="PhoneCall" options={{ headerTitle: 'Phone Call', headerTitleStyle: { fontWeight: 'bold' }, headerRight: () => HeaderRightSwitch() }} component={PhoneCallScreen} />
-      <Tab.Screen name="NearByPeople" options={{ headerTitle: 'Near By People', headerTitleStyle: { fontWeight: 'bold' }, headerRight: () => HeaderRightSwitch() }} component={NearByPeopleScreen} />
+      <Tab.Screen name="Home Page" options={{ headerTitle: 'Home', headerTitleStyle: { fontWeight: 'bold' }, headerRight: () => HeaderRightSwitch() }} component={HomeScreen} />
+      <Tab.Screen name="Practice" options={{ headerTitle: 'Phone Call', headerTitleStyle: { fontWeight: 'bold' }, headerRight: () => HeaderRightSwitch() }} component={PhoneCallScreen} />
+      <Tab.Screen name="Near By People" options={{ headerTitle: 'Near By People', headerTitleStyle: { fontWeight: 'bold' }, headerRight: () => HeaderRightSwitch() }} component={NearByPeopleScreen} />
       <Tab.Screen name="Settings" options={{ headerTitle: 'Profile', headerTitleStyle: { fontWeight: 'bold' }, headerRight: () => HeaderRightSwitch() }} component={ProfileScreen} />
     </Tab.Navigator>
   );
@@ -90,6 +89,7 @@ const App = () => {
       if (status) {
         getNetworkStatusAction(status, dispatch);
         setIsConnected(status);
+        if(token)getUserDetailsAction(dispatch);
       }
     });
 
@@ -110,7 +110,7 @@ const App = () => {
         <Stack.Screen name="Profile" options={{ headerShown: false }} component={ProfileScreen} />
         <Stack.Screen name="UserProfile" options={{ headerShown: false }} component={UserProfileScreen} />
         <Stack.Screen name="VideoCall" options={{ headerShown: false }} component={VideoCallScreen} />
-        <Stack.Screen name="PhoneCall" options={{ headerShown: false }} component={PhoneCallScreen} />
+        <Stack.Screen name="Practice" options={{ headerShown: false }} component={PhoneCallScreen} />
         <Stack.Screen name="LocationSelection" options={{ headerTitle: 'Select Location' }} component={LocationSelectionScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="LocationPermission" options={{ headerShown: false }} component={LocationPermissionScreen} />

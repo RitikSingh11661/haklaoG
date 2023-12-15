@@ -9,7 +9,7 @@ const schema = mongoose.Schema({
     kycVideo: { type: String, require: true },
     verified: { type: Boolean, default: false },
     verifiedBy: { type: String, default: '' },
-    bio: { type: String, default: 'Lorem Ipsum is a good way to write.' },
+    bio: { type: String, default: '' },
     location: [{ type: Object, default: [] }],
     availableForCall: { type: Boolean, default: false }
 }, { timestamps: true })
