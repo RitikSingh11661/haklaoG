@@ -6,10 +6,12 @@ const UserProfileScreen = ({ route, navigation }: any) => {
   const { user } = route.params;
   const [isReporting, setIsReporting] = React.useState(false);
 
+  const handleIsReporting=()=>(setIsReporting(prev=>!prev));
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={user?.profilePicture ? { uri: user?.profilePicture } : require('../../assets/user.png')} style={styles.profileImage} />
+        <Image source={user?.image ? { uri: user?.image } : require('../../assets/user.png')} style={styles.profileImage} />
         <Text style={styles.userName}>{user?.name}</Text>
         <Text style={styles.userBio}>{user?.bio}</Text>
       </View>
@@ -22,7 +24,7 @@ const UserProfileScreen = ({ route, navigation }: any) => {
       <TouchableOpacity style={styles.reportButton} onPress={() => setIsReporting(true)}>
         <Text style={styles.reportButtonText}>Report</Text>
       </TouchableOpacity>
-      <ReportModel isReporting={isReporting} againstUserId={user?._id} />
+      <ReportModel isReporting={isReporting} againstUserId={user?._id} handleIsReporting={handleIsReporting} />
     </View>
   );
 };

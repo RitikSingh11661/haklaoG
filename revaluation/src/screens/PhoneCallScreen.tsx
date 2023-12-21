@@ -29,7 +29,7 @@ export const PhoneCallScreen = ({ navigation }: any) => {
                 renderItem={({ item }: any) => (
                     <View style={styles.userContainer}>
                         <TouchableOpacity onPress={() => navigation.navigate('UserProfile', { user: item })}>
-                            <Image source={item?.profilePicture?{uri:item?.profilePicture}:require('../../assets/user.png')} style={styles.profileImage} />
+                            <Image source={item?.image?{uri:item?.image}:require('../../assets/user.png')} style={styles.profileImage} />
                         </TouchableOpacity>
                         <View style={styles.userInfo}>
                             <Text style={styles.userName}>{item?.name}</Text>

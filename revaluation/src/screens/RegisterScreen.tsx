@@ -37,7 +37,7 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
       await AsyncStorage.setItem('token', data?.token);
       setLoading(false);
       navigation.replace('VerificationPending');
-    } catch (error:any) {
+    } catch (error: any) {
       setLoading(false);
       Alert.alert(error?.message, 'Please enter valid email or password')
     }
@@ -46,7 +46,7 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
   const handleCaptureVideo = async () => {
     try {
       const video: any = await launchCamera({ mediaType: 'video', durationLimit: 5, cameraType: 'front' });
-      if(!video?.didCancel){
+      if (!video?.didCancel) {
         const filename = `${uuid.v4()}-kycVideo.mp4`;
         setVideoLoading(true);
         await readFile(video?.assets[0]?.uri, 'base64').then(async (res) => {

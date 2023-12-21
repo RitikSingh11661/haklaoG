@@ -71,7 +71,7 @@ const LocationPermissionScreen = () => {
 
   const renderItem = ({ item }: any) => (
     <View style={styles.itemContainer}>
-      <Image source={item?.image ?{ uri: item.image} : require('../../assets/man.webp')} style={styles.userImage} />
+      <Image source={item?.image ?{ uri: item.image} : require('../../assets/unknown-person-icon.png')} style={styles.userImage} />
       <View style={styles.userInfo}>
         <Text style={styles.userName}>{item?.name}</Text>
         <Text style={styles.bio}>{item?.bio}</Text>

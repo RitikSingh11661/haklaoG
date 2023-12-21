@@ -3,22 +3,21 @@ import { View, Text, TouchableOpacity, Button, Modal, Alert, TextInput, StyleShe
 import { userReportAction } from '../redux/actions';
 import { useDispatch } from 'react-redux';
 
-const ReportModel = ({ isReporting, againstUserId }: { isReporting: boolean, againstUserId: String }) => {
+const ReportModel = ({ isReporting, againstUserId,handleIsReporting }: { isReporting: boolean, againstUserId: String,handleIsReporting:Function }) => {
     const dispatch = useDispatch();
-    const [isReport, setIsReport] = React.useState(isReporting||false);
     const [reportReason, setReportReason] = React.useState('');
     const [reportDescription, setReportDescription] = React.useState('');
-
+    
     const handleReport = () => {
         const obj = { reason: reportReason, description: reportDescription, againstUserId };
         userReportAction(obj, dispatch)
             .then((res) => Alert.alert(res?.msg))
             .catch((err) => Alert.alert('Report is not registered', err))
-        setIsReport(false);
+        handleIsReporting();
     };
 
     return (
-        <Modal visible={isReport} animationType="slide">
+        <Modal visible={isReporting} animationType="slide">
             <View style={styles.reportModal}>
                 <Text style={styles.reportTitle}>Report User!</Text>
                 <Text style={{ fontSize: 18, marginBottom: 80 }}>Do not hesitate to share your experience</Text>
@@ -41,7 +40,7 @@ const ReportModel = ({ isReporting, againstUserId }: { isReporting: boolean, aga
                 <TextInput placeholder="Optional" value={reportDescription} onChangeText={(text) => setReportDescription(text)} style={styles.reportInput} />
                 <View style={{ flexDirection: 'row', gap: 10 }}>
                     <Button disabled={reportReason.length < 1} title="Submit Report" onPress={handleReport} />
-                    <Button title="Cancel" onPress={() => setIsReporting(false)} />
+                    <Button title="Cancel" onPress={()=>handleIsReporting()} />
                 </View>
             </View>
         </Modal>

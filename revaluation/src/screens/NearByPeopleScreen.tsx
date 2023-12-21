@@ -42,8 +42,8 @@ const NearByPeopleScreen = () => {
         renderItem={({ item }) => (
           <View style={styles.userContainer}>
             <TouchableOpacity>
-            <Image source={item?.profilePicture?{uri:item?.profilePicture}:require('../../assets/user.png')} style={styles.profileImage} />
-              {/* <Image source={{ uri: item?.profilePicture }} style={styles.profileImage} /> */}
+            <Image source={item?.image?{uri:item?.image}:require('../../assets/user.png')} style={styles.profileImage} />
+              {/* <Image source={{ uri: item?.image }} style={styles.profileImage} /> */}
             </TouchableOpacity>
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{item?.name}</Text>
