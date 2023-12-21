@@ -20,6 +20,7 @@ import { PhoneCallScreen } from './src/screens/PhoneCallScreen';
 import NetInfo from '@react-native-community/netinfo';
 import { NoInternetScreen } from './src/screens/NoInternetScreen';
 import VerificationPendingScreen from './src/screens/VerificationPendingScreen';
+import SplashScreen from 'react-native-splash-screen';
 
 const App = () => {
   const Tab = createBottomTabNavigator();
@@ -90,16 +91,17 @@ const App = () => {
         getNetworkStatusAction(status, dispatch);
         setIsConnected(status);
         if(token)getUserDetailsAction(dispatch);
-      }
+      }else setIsConnected(false);
     });
-
     subscribe();
+    SplashScreen.hide();
     // return () => { updateUserDetailsAction(user?._id, { availableForCall: false }, dispatch); }
   }, []);
 
   React.useEffect(()=>{
     setIsEnabledCall(user?.availableForCall);
   },[user?.availableForCall])
+  
 
   if (!isConnected) return <NoInternetScreen />;
 

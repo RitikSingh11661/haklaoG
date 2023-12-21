@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, Alert, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
-import { logoutAction, updateUserDetailsAction } from '../redux/actions';
+import { getUserDetailsAction, logoutAction, updateUserDetailsAction } from '../redux/actions';
 import AWS from 'aws-sdk';
 import RNFS from 'react-native-fs';
 import { accessKeyId, secretAccessKey, region, bucketName } from '@env';
@@ -15,7 +15,7 @@ const ProfileScreen = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = useState(false)
   const [bio, setBio] = useState(user?.bio);
   const [isEditBio, setIsEditBio] = useState(false);
-  const [pImage, setPImage] = useState(user?.profilePicture || 'https://i.ibb.co/0VhQjmM/user.png');
+  const [pImage, setPImage] = useState(user?.image);
 
   const credential = { accessKeyId, secretAccessKey, region, signatureVersion: "v4" }
   const s3 = new AWS.S3(credential);
@@ -61,7 +61,7 @@ const ProfileScreen = ({ navigation }: any) => {
       const params = { Bucket: bucketName, Key: filename, Body: arrayBuffer, ContentType: `image/jpeg` };
       s3.upload(params, (s3Err: any, s3Data: any) => {
         if (s3Err) console.log('S3 error:', s3Err);
-        else updateUserDetailsAction(user._id, { profilePicture: s3Data?.Location }, dispatch).then(() => {
+        else updateUserDetailsAction(user._id, { image: s3Data.Location}, dispatch).then(() => {
           setPImage(s3Data.Location);
           setIsLoading(prev => !prev)
         });
@@ -82,7 +82,7 @@ const ProfileScreen = ({ navigation }: any) => {
       <View style={styles.profileContainer}>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ position: 'relative' }}>
-            <Image source={{ uri: pImage }} style={styles.image} />
+            <Image source={pImage?{uri:pImage}:require('../../assets/user.png')} style={styles.image} />
             {isLoading && <ActivityIndicator style={styles.loadingIndicator} size="large" color="grey" />}
           </View>
           <TouchableOpacity onPress={handleSelectImage}>

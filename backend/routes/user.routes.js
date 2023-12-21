@@ -97,10 +97,9 @@ userRoutes.delete("/delete/:id", async (req, res) => {
 
 userRoutes.patch("/update/:id", async (req, res) => {
     try {
-        const user = await userModel.findByIdAndUpdate(req.params.id, req.body);
+        const user = await userModel.findByIdAndUpdate(req.params.id, req.body ,{returnDocument:'after'});
         res.status(200).send({ data: user, msg: "User details has been updated", status: "success" });
     } catch (e) {
-        console.log('e in update', e)
         res.status(400).send({ msg: e });
     }
 })
