@@ -24,8 +24,7 @@ ios/.xcode.env.local
 
 # Android/IntelliJ
 #
-build/
-android/app/release
+build/android/app/release
 .idea
 .gradle
 local.properties
