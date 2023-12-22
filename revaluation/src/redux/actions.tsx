@@ -105,8 +105,6 @@ export const getUserDetailsAction = async (dispatch: any) => {
         const { data: u } = data;
         dispatch(getUserDetailsSuccess(u));
         return u;
-    } catch (error) {
-        console.log('error in userDetails', error)
         dispatch(getUserDetailsFailure(error));
         throw error;
     }
