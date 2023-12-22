@@ -5,6 +5,8 @@ import { RootStackParamList } from '../types';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { loginAction } from '../redux/actions';
+import {GoogleSignin,GoogleSigninButton} from '@react-native-google-signin/google-signin';
+import { API_KEY } from '@env';
 
 type LoginProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
 const LoginScreen = ({ navigation }: LoginProps) => {
@@ -12,7 +14,13 @@ const LoginScreen = ({ navigation }: LoginProps) => {
   const dispatch = useDispatch();
   const formRef = React.useRef({ email: '', password: '' });
 
+  GoogleSignin.configure({webClientId:API_KEY});
+
   const handleLogin = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = emailRegex.test(formRef.current.email);
+    if(!isEmailValid)return Alert.alert('Invalid email','Please enter email in valid format');
+    if(!formRef.current.password)return Alert.alert('Invalid Password','Please enter valid password');
     try {
       const data = await loginAction(formRef.current, dispatch);
       if (data?.verified) navigation.replace('Home');
@@ -23,11 +31,22 @@ const LoginScreen = ({ navigation }: LoginProps) => {
     }
   };
 
+  const handleGoogleAuth=async()=>{
+    try {
+      await GoogleSignin.hasPlayServices();
+      // const userInfo = await GoogleSignin.signIn();
+      // console.log('userInfo',userInfo) Getting 'DEVELOPER_ERROR'
+    } catch (error:any) {
+      console.log('error',error)
+  }
+}
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-      <TextInput style={styles.input} placeholder="Email" onChangeText={(e: any) => formRef.current.email = e} />
-      <TextInput style={styles.input} placeholder="Password" secureTextEntry onChangeText={(e: any) => formRef.current.password = e} />
+      <TextInput keyboardType='email-address' inputMode='email' autoCapitalize='none' style={styles.input} placeholder="Email" onChangeText={(e: any) => formRef.current.email = e} />
+      <TextInput style={styles.input} placeholder="Password" autoCapitalize='none' secureTextEntry onChangeText={(e: any) => formRef.current.password = e} />
+      {/* <GoogleSigninButton style={{ width: 192, height: 48 }} size={GoogleSigninButton.Size.Wide} color={GoogleSigninButton.Color.Dark} onPress={()=>handleGoogleAuth()}/> */}
       <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>

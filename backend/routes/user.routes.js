@@ -27,7 +27,7 @@ userRoutes.post("/add", async (req, res) => {
     const { email, name, password, phone, kycVideo } = req.body;
     try {
         if (!email || !name || !password || !kycVideo) return res.status(400).send({ msg: "All the fields are required" });
-        const preCheck = await userModel.findOne({ email });
+        const preCheck = await userModel.findOne({ email: new RegExp(email, 'i') });
         if (preCheck) return res.status(400).send({ msg: "User already registered" });
         const hashedPassword = await bcrypt.hash(password, 7);
         const newUser = new userModel({ email, name, password: hashedPassword, phone, kycVideo });
@@ -44,7 +44,7 @@ userRoutes.post("/login", async (req, res) => {
     const { email, password } = req.body;
     try {
         if (!email || !password) return res.status(400).send({ msg: "Email and password are required" });
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({email: new RegExp(email, 'i')});
         if (!user) return res.status(400).send({ msg: "User not found" });
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) return res.status(400).send({ msg: "Invalid password" });

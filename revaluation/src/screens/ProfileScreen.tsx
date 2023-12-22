@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, Alert, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, Alert, Pressable, ScrollView, ActivityIndicator, Linking } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import ImagePicker from 'react-native-image-crop-picker';
-import { getUserDetailsAction, logoutAction, updateUserDetailsAction } from '../redux/actions';
+import { logoutAction, updateUserDetailsAction } from '../redux/actions';
 import AWS from 'aws-sdk';
-import RNFS from 'react-native-fs';
 import { accessKeyId, secretAccessKey, region, bucketName } from '@env';
-import { decode } from "base64-arraybuffer";
 import uuid from 'react-native-uuid';
+import { launchCamera } from 'react-native-image-picker';
+import { toByteArray } from 'base64-js';
 
 const ProfileScreen = ({ navigation }: any) => {
   const user = useSelector((store: any) => store.user);
@@ -15,7 +14,6 @@ const ProfileScreen = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = useState(false)
   const [bio, setBio] = useState(user?.bio);
   const [isEditBio, setIsEditBio] = useState(false);
-  const [pImage, setPImage] = useState(user?.image);
 
   const credential = { accessKeyId, secretAccessKey, region, signatureVersion: "v4" }
   const s3 = new AWS.S3(credential);
@@ -29,45 +27,33 @@ const ProfileScreen = ({ navigation }: any) => {
       setIsEditBio(prev => !prev)
       Alert.alert('Your Profile has been updated', data.msg);
     } catch (error: any) {
-      console.log('error', error)
-      Alert.alert('Error', error)
+      Alert.alert('Error', error?.message?error.message:error.msg)
     }
   };
 
   const handleSelectImage = async () => {
-    // const image:any = await ImagePicker.openPicker({
-    //   cropping: true,
-    // });
-    // console.log('image',image)
-
-    // ImagePicker.openPicker({
-    //   width: 300,
-    //   height: 400,
-    //   cropping: true
-    // }).then(image => {
-    //   console.log(image);
-    // });
-    try {
-      const image: any = await ImagePicker.openCamera({ cropping: true });
-      // what image contain :{ "cropRect": { "height": 3262, "width": 2448, "x": 0, "y": 1 }, "height": 3264, "mime": "image/jpeg", "modificationDate": "1698174517000", "path": "file:///data/user/0/com.revaluation/cache/react-native-image-crop-picker/208220e6-e57e-4cd3-a2c5-585b0dd5e03f.jpg", "size": 2324982, "width": 2448 }
+   try {
+    const image:any = await launchCamera({mediaType:'photo',includeBase64:true})
+    if (!image?.didCancel) {
+      const filename = `${user?._id}_${uuid.v4()}-image.jpeg`;
       setIsLoading(prev => !prev);
-
-      // const fileExtension = image.path.split('.').pop();
-      const filename = `${user?._id}_${uuid.v4()}-profileImage.jpeg`;
-
-      // Read the image file and convert it to a base64 string
-      const data = await RNFS.readFile(image.path, 'base64');
-      const arrayBuffer = decode(data);
+      const arrayBuffer = toByteArray(image?.assets[0]?.base64);
       const params = { Bucket: bucketName, Key: filename, Body: arrayBuffer, ContentType: `image/jpeg` };
-      s3.upload(params, (s3Err: any, s3Data: any) => {
-        if (s3Err) console.log('S3 error:', s3Err);
-        else updateUserDetailsAction(user._id, { image: s3Data.Location}, dispatch).then(() => {
-          setPImage(s3Data.Location);
-          setIsLoading(prev => !prev)
-        });
-      });
+      const { Location } = await s3.upload(params).promise();
+      updateUserDetailsAction(user._id, { image:Location}, dispatch)
+      setIsLoading(prev => !prev)
+      }
+    } catch (error:any) {
+      Alert.alert('Error while capturing image:', error?.message?error.message:error.msg);
+    }
+  }
+
+  const handleContact=async()=>{
+    try {
+      await Linking.canOpenURL('mailto:ritikofficial11661@gmail.com')
+      await Linking.openURL('mailto:ritikofficial11661@gmail.com')
     } catch (error) {
-      console.log('error while uploading the profile image', error)
+      Alert.alert('Not able to contact',"Oops! It seems there's no email app set up on your device to handle this request. Please check your device settings and make sure you have an email app installed.")
     }
   }
 
@@ -82,7 +68,7 @@ const ProfileScreen = ({ navigation }: any) => {
       <View style={styles.profileContainer}>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ position: 'relative' }}>
-            <Image source={pImage?{uri:pImage}:require('../../assets/user.png')} style={styles.image} />
+            <Image source={user?.image?{uri:user.image}:require('../../assets/user.png')} style={styles.image} />
             {isLoading && <ActivityIndicator style={styles.loadingIndicator} size="large" color="grey" />}
           </View>
           <TouchableOpacity onPress={handleSelectImage}>
@@ -151,10 +137,12 @@ const ProfileScreen = ({ navigation }: any) => {
           <Image source={require('../../assets/share.png')} style={{ width: 25, height: 25 }} alt='map markup' />
           <Text style={{ fontWeight: 'bold', color: '#333030' }}>Share App</Text>
         </View>
+        <TouchableOpacity onPress={handleContact}>
         <View style={styles.supportDiv}>
           <Image source={require('../../assets/contact-us.png')} style={{ width: 25, height: 25 }} alt='map markup' />
           <Text style={{ fontWeight: 'bold', color: '#333030' }}>Contact Us</Text>
         </View>
+        </TouchableOpacity>
         <View style={styles.supportDiv}>
           <Image source={require('../../assets/about-us.png')} style={{ width: 25, height: 25 }} alt='map markup' />
           <Text style={{ fontWeight: 'bold', color: '#333030' }}>About Us</Text>

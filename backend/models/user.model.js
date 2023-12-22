@@ -14,6 +14,12 @@ const schema = mongoose.Schema({
     availableForCall: { type: Boolean, default: false }
 }, { timestamps: true })
 
+// Convert email to lowercase before saving
+schema.pre('save', function(next) {
+    this.email = this.email.toLowerCase();
+    next();
+});
+
 const userModel = mongoose.model("user", schema);
 
 module.exports = { userModel };

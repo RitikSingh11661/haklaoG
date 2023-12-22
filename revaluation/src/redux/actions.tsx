@@ -75,7 +75,6 @@ export const loginAction = async (user: Object, dispatch: any) => {
         dispatch(loginSuccess(data?.token));
         return data;
     } catch (error) {
-        console.log('error', error);
         dispatch(loginFailure(error))
         throw error;
     }
@@ -89,7 +88,6 @@ export const logoutAction = async (dispatch: any) => {
         dispatch(logoutRequest());
         return null;
     } catch (error) {
-        console.log('error in func', error)
         throw error;
     }
 }
@@ -107,8 +105,6 @@ export const getUserDetailsAction = async (dispatch: any) => {
         const { data: u } = data;
         dispatch(getUserDetailsSuccess(u));
         return u;
-    } catch (error) {
-        console.log('error in userDetails', error)
         dispatch(getUserDetailsFailure(error));
         throw error;
     }
@@ -133,9 +129,7 @@ export const updateUserDetailsAction = async (userId: any, updateObj: Object, di
     dispatch(updateUserDetailsRequest());
     try {
         const token = await AsyncStorage.getItem('token');
-        console.log('updateObj',updateObj)
         const { data } = await axios.patch(`${url}/users/update/${userId}`, updateObj, { headers: { token } });
-        console.log('data',data)
         dispatch(updateUserDetailsSuccess(data?.data));
         return data?.data;
     } catch (error) {
@@ -153,7 +147,6 @@ export const userReportAction = async (report: Object, dispatch: any) => {
         dispatch(UserReportSuccess(data))
         return data;
     } catch (error) {
-        console.log('error', error);
         dispatch(UserReportFailure(error))
         throw error;
     }
@@ -169,7 +162,6 @@ export const userCallAction = async (callee: Object) => {
 export const userKycAction = async (videoLink: Object) => {
     try {
         const { data } = await axios.post(`${url}/users/kyc`, { videoLink });
-        console.log('data in kyc action',data)
         return data;
     } catch (error) {
         console.log('error in kyc action',error)
