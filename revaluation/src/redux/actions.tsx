@@ -88,7 +88,6 @@ export const logoutAction = async (dispatch: any) => {
         dispatch(logoutRequest());
         return null;
     } catch (error) {
-        console.log('error in func', error)
         throw error;
     }
 }
