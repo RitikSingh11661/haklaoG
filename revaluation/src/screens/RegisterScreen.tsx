@@ -10,13 +10,12 @@ import { launchCamera } from 'react-native-image-picker';
 import { accessKeyId, secretAccessKey, region, bucketName } from '@env';
 import AWS from 'aws-sdk';
 import { readFile } from 'react-native-fs';
-import { decode } from 'base64-arraybuffer';
 import uuid from 'react-native-uuid';
+import { toByteArray } from 'base64-js';
 
 type RegisterProps = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
 const RegisterScreen = ({ navigation }: RegisterProps) => {
-  // const loading = useSelector((store: any) => store.loading);
   const [loading, setLoading] = React.useState(false);
   const dispatch = useDispatch();
   const [videoLoading, setVideoLoading] = React.useState(false);
@@ -39,26 +38,25 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
       navigation.replace('VerificationPending');
     } catch (error: any) {
       setLoading(false);
+      console.log('error',error)
       Alert.alert(error?.message, 'Please enter valid email or password')
     }
   };
 
   const handleCaptureVideo = async () => {
     try {
-      const video: any = await launchCamera({ mediaType: 'video', durationLimit: 5, cameraType: 'front' });
+      const video: any = await launchCamera({ mediaType: 'video', durationLimit: 5, cameraType: 'front', formatAsMp4: true });
       if (!video?.didCancel) {
         const filename = `${uuid.v4()}-kycVideo.mp4`;
         setVideoLoading(true);
-        await readFile(video?.assets[0]?.uri, 'base64').then(async (res) => {
-          const arrayBuffer = decode(res);
-          const params = { Bucket: bucketName, Key: filename, Body: arrayBuffer, ContentType: 'video/mp4' };
-          const { Location } = await s3.upload(params).promise();
-          formRef.current.kycVideo = Location;
-        })
+        const arrayBuffer = toByteArray(await readFile(video?.assets[0]?.uri, 'base64'));
+        const params = { Bucket: bucketName, Key: filename, Body: arrayBuffer, ContentType: 'video/mp4' };
+        const { Location } = await s3.upload(params).promise();
+        formRef.current.kycVideo = Location;
       }
       setVideoLoading(false);
-    } catch (error) {
-      // console.error('Error capturing video:', error);
+    } catch (error: any) {
+      Alert.alert('Error while capturing video', error.message)
       setVideoLoading(false);
     }
   };
@@ -67,10 +65,10 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
     <View style={styles.container}>
       <Text style={styles.title}>Register</Text>
       <TextInput style={styles.input} placeholder="Name" onChangeText={e => formRef.current.name = e} />
-      <TextInput style={styles.input} placeholder="Email" onChangeText={e => formRef.current.email = e} />
+      <TextInput style={styles.input} placeholder="Email" keyboardType='email-address' inputMode='email' autoCapitalize='none' onChangeText={e => formRef.current.email = e} />
       <TextInput keyboardType='number-pad' style={styles.input} placeholder="Phone No." onChangeText={e => formRef.current.phone = e} />
       <View style={styles.passwordContainer}>
-        <TextInput style={styles.passwordInput} placeholder="Password" secureTextEntry={!showPassword} onChangeText={e => formRef.current.password = e} />
+        <TextInput style={styles.passwordInput} autoCapitalize='none' placeholder="Password" secureTextEntry={!showPassword} onChangeText={e => formRef.current.password = e} />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
           <Text style={styles.toggleText}>{showPassword ? 'Hide' : 'Show'}</Text>
         </TouchableOpacity>

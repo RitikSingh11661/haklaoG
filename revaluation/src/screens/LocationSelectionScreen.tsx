@@ -6,7 +6,7 @@ import Geolocation from 'react-native-geolocation-service';
 import { Region } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUsersDetailsAction, updateUserDetailsAction } from '../redux/actions';
+import {updateUserDetailsAction} from '../redux/actions';
 import axios from 'axios';
 
 const LocationSelectionScreen = () => {
@@ -17,7 +17,7 @@ const LocationSelectionScreen = () => {
   const [selectedLocation, setSelectedLocation] = React.useState<any>();
 
   // Memoize the selectedLocation
-  const memoizedSelectedLocation = React.useMemo(() => selectedLocation, [selectedLocation]);
+  // const memoizedSelectedLocation = React.useMemo(() => selectedLocation, [selectedLocation]);
 
   const handleMapPress = (event: any) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
@@ -36,7 +36,6 @@ const LocationSelectionScreen = () => {
         location.push(locObj);
         const data = await updateUserDetailsAction(user._id, { location }, dispatch);
         Alert.alert('Location Updated', data.msg);
-        getUsersDetailsAction(dispatch);
         navigation.goBack();
       })
     });

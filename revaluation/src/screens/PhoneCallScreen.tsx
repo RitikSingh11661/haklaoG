@@ -24,7 +24,7 @@ export const PhoneCallScreen = ({ navigation }: any) => {
     return (
         <View style={styles.container}>
             <Text style={{ fontSize: 20, marginBottom: 30 }}>Be respectful to each other and do not make unncessary calls.</Text>
-            {filteredUsers?.length < 1 && <Text>Currently in your state there are not people who are using this app, don't looe hope, soon they will be avaibable</Text>}
+            {filteredUsers?.length < 1 && <Text>Currently in your state there are not people who are using this app, don't loose hope, soon they will be avaibable</Text>}
             <FlatList data={filteredUsers} keyExtractor={(user: any) => user._id.toString()}
                 renderItem={({ item }: any) => (
                     <View style={styles.userContainer}>
