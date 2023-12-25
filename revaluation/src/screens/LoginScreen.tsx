@@ -1,55 +1,43 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { loginAction } from '../redux/actions';
-import {GoogleSignin,GoogleSigninButton} from '@react-native-google-signin/google-signin';
-import { API_KEY } from '@env';
+import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import { webClientId } from '@env';
 
 type LoginProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
 const LoginScreen = ({ navigation }: LoginProps) => {
   const loading = useSelector((store: any) => store.loading);
   const dispatch = useDispatch();
-  const formRef = React.useRef({ email: '', password: '' });
 
-  GoogleSignin.configure({webClientId:API_KEY});
-
-  const handleLogin = async () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const isEmailValid = emailRegex.test(formRef.current.email);
-    if(!isEmailValid)return Alert.alert('Invalid email','Please enter email in valid format');
-    if(!formRef.current.password)return Alert.alert('Invalid Password','Please enter valid password');
-    try {
-      const data = await loginAction(formRef.current, dispatch);
-      if (data?.verified) navigation.replace('Home');
-      else navigation.replace('VerificationPending');
-    } catch (error: any) {
-      console.log('error while login', error);
-      Alert.alert('Error', error.msg)
-    }
-  };
-
-  const handleGoogleAuth=async()=>{
+  const handleGoogleAuth = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      // const userInfo = await GoogleSignin.signIn();
-      // console.log('userInfo',userInfo) Getting 'DEVELOPER_ERROR'
-    } catch (error:any) {
-      console.log('error',error)
+      const userInfo = await GoogleSignin.signIn();
+      await GoogleSignin.signOut();
+      const data = await loginAction({ email: userInfo?.user?.email }, dispatch);
+      navigation.replace(data?.verified ? 'Home' : 'VerificationPending');
+    } catch (error: any) {
+      console.log('error', error)
+      Alert.alert('Error', error?.msg ? error.msg : error.message);
+    }
   }
-}
+
+  React.useEffect(() => {
+    GoogleSignin.configure({ webClientId, offlineAccess: true });
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput keyboardType='email-address' inputMode='email' autoCapitalize='none' style={styles.input} placeholder="Email" onChangeText={(e: any) => formRef.current.email = e} />
-      <TextInput style={styles.input} placeholder="Password" autoCapitalize='none' secureTextEntry onChangeText={(e: any) => formRef.current.password = e} />
-      {/* <GoogleSigninButton style={{ width: 192, height: 48 }} size={GoogleSigninButton.Size.Wide} color={GoogleSigninButton.Color.Dark} onPress={()=>handleGoogleAuth()}/> */}
-      <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+      <Text style={styles.title}>Welcome to Haklao G, its nice to see you</Text>
+      <GoogleSigninButton style={styles.googleButton} size={GoogleSigninButton.Size.Wide} color={GoogleSigninButton.Color.Dark} onPress={() => handleGoogleAuth()} />
+      <View>
+        <Text style={styles.subTitle}>Don't worry, we will never user your data withiout your permission</Text>
+        <Text style={styles.subTitle}>By continuing, you agree to Haklao G Terms of service & Pricacy Policy</Text>
+      </View>
       <TouchableOpacity onPress={() => navigation.replace('Register')}>
         <Text style={styles.registerText}>Don't have an account? Register</Text>
       </TouchableOpacity>
@@ -65,35 +53,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     backgroundColor: '#f9f9f9',
+    gap: 60
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 18,
     marginBottom: 16,
+    textAlign: 'center',
     color: '#333',
   },
-  input: {
-    width: '100%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    paddingHorizontal: 10,
-    marginBottom: 12,
-    backgroundColor: '#fff',
+  subTitle: {
+    marginBottom: 16,
+    textAlign: 'center'
   },
-  buttonContainer: {
-    backgroundColor: '#007bff',
-    borderRadius: 4,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginBottom: 12,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
+  googleButton: {
+    marginTop: 50,
+    width: 240,
+    height: 55
   },
   registerText: {
     color: '#007bff',
@@ -101,5 +76,6 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   }
 });
+
 
 export default LoginScreen;
