@@ -40,6 +40,7 @@ userRoutes.post("/add", async (req, res) => {
 
 userRoutes.post("/login", async (req, res) => {
     const {email} = req.body;
+    console.log('req.body',req.body);
     try {
         if (!email) return res.status(400).send({ msg: "Email is required" });
         const user = await userModel.findOne({email});

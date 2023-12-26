@@ -28,10 +28,10 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
   const s3 = new AWS.S3(credential);
 
   const handleRegister = async () => {
-    if (!formRef.current.name && !formRef.current.email && !formRef.current.phone) {
-      return Alert.alert('Error', 'Please fill every filled');
-    }
-    if (!formRef.current.kycVideo) return Alert.alert('Error', 'Please record your introduction video');
+    if (!formRef.current.name || !formRef.current.phone)return Alert.alert('Error', 'Please fill your Name & Phone No. filled');
+    if (formRef.current.phone.length<10)return Alert.alert('Invalid Phone Number', 'Please enter a valid 10 digits phone no.');
+    if (!formRef.current.kycVideo)return Alert.alert('Introduction Video', 'Please record your introduction video');
+    if(!formRef.current.email)return Alert.alert('Verify Email', 'Please verify your email by Google');
     setLoading(true);
     try {
       const data = await signupAction(formRef.current, dispatch);
@@ -40,14 +40,13 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
       navigation.replace('VerificationPending');
     } catch (error: any) {
       setLoading(false);
-      console.log('error', error)
       Alert.alert(error, error?.msg ? error.msg : error.message);
     }
   };
 
   const handleCaptureVideo = async () => {
     try {
-      const video: any = await launchCamera({ mediaType: 'video', durationLimit: 5, cameraType: 'front', formatAsMp4: true });
+      const video: any = await launchCamera({ mediaType: 'video', durationLimit: 120, cameraType: 'front', formatAsMp4: true });
       if (!video?.didCancel) {
         const filename = `${uuid.v4()}-kycVideo.mp4`;
         setVideoLoading(true);
