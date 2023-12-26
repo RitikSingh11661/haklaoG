@@ -113,8 +113,9 @@ export const getUserDetailsAction = async (dispatch: any) => {
 
 export const getUsersDetailsAction = async (dispatch: any) => {
     dispatch(getUsersDetailsRequest());
+    let token;
     try {
-        const token = await AsyncStorage.getItem('token');
+        token = await AsyncStorage.getItem('token');
         const { data } = await axios.get(`${url}/users`, { headers: { token } });
         const { data: users } = data;
         dispatch(getUsersDetailsSuccess(users));
@@ -128,8 +129,8 @@ export const getUsersDetailsAction = async (dispatch: any) => {
 
 export const updateUserDetailsAction = async (userId: any, updateObj: Object, dispatch: any) => {
     dispatch(updateUserDetailsRequest());
+    let token = await AsyncStorage.getItem('token');
     try {
-        const token = await AsyncStorage.getItem('token');
         const { data } = await axios.patch(`${url}/users/update/${userId}`, updateObj, { headers: { token } });
         dispatch(updateUserDetailsSuccess(data?.data));
         return data?.data;
@@ -142,8 +143,9 @@ export const updateUserDetailsAction = async (userId: any, updateObj: Object, di
 
 export const userReportAction = async (report: Object, dispatch: any) => {
     dispatch(UserReportRequest());
+    let token;
     try {
-        const token = await AsyncStorage.getItem('token');
+        token = await AsyncStorage.getItem('token');
         const { data } = await axios.post(`${url}/reports/add`, report, { headers: { token } });
         dispatch(UserReportSuccess(data))
         return data;
@@ -155,9 +157,14 @@ export const userReportAction = async (report: Object, dispatch: any) => {
 
 
 export const userCallAction = async (callee: Object) => {
-    const token = await AsyncStorage.getItem('token');
-    const { data } = await axios.post(`${url}/calls/add`, { callee }, { headers: { token } });
-    return data;
+    let token;
+    try {
+        token = await AsyncStorage.getItem('token');
+     const { data } = await axios.post(`${url}/calls/add`, { callee }, { headers: { token } });
+     return data;
+    } catch (error) {
+    //    console.log(error);
+    }
 }
 
 export const userKycAction = async (videoLink: Object) => {
@@ -168,5 +175,4 @@ export const userKycAction = async (videoLink: Object) => {
         console.log('error in kyc action',error)
         throw error;
     }
-
 }

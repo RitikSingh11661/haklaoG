@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { loginAction } from '../redux/actions';
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
-import { webClientId } from '@env';
+import {webClientId} from '@env';
 
 type LoginProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
 const LoginScreen = ({ navigation }: LoginProps) => {
@@ -21,7 +21,6 @@ const LoginScreen = ({ navigation }: LoginProps) => {
       const data = await loginAction({ email: userInfo?.user?.email }, dispatch);
       navigation.replace(data?.verified ? 'Home' : 'VerificationPending');
     } catch (error: any) {
-      console.log('error', error)
       Alert.alert('Error', error?.msg ? error.msg : error.message);
     }
   }
