@@ -3,17 +3,19 @@ import { FlatList, StyleSheet, TouchableOpacity, View, Image, Text, Alert } from
 import { useDispatch, useSelector } from 'react-redux';
 import call from 'react-native-phone-call';
 import { getUsersDetailsAction, userCallAction } from '../redux/actions'
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export const PhoneCallScreen = ({ navigation }: any) => {
     const dispatch = useDispatch();
+    const loading = useSelector((store: any) => store.loading);
     const user = useSelector((store: any) => store.user);
     const users = useSelector((store: any) => store.users);
     const [filteredUsers, setfilteredUsers] = React.useState([]);
     const memoizedUsers = useMemo(() => users, [users]);
 
     const handleCall = (phone: String, callee: String) => {
-        const args = {number: phone}
-        call(args).then(() =>userCallAction(callee)).catch((error: any) => Alert.alert('Unable to call', error));
+        const args = { number: phone }
+        call(args).then(() => userCallAction(callee)).catch((error: any) => Alert.alert('Unable to call', error));
     }
 
     React.useEffect(() => {
@@ -29,7 +31,7 @@ export const PhoneCallScreen = ({ navigation }: any) => {
                 renderItem={({ item }: any) => (
                     <View style={styles.userContainer}>
                         <TouchableOpacity onPress={() => navigation.navigate('UserProfile', { user: item })}>
-                            <Image source={item?.image?{uri:item?.image}:require('../../assets/user.png')} style={styles.profileImage} />
+                            <Image source={item?.image ? { uri: item?.image } : require('../../assets/user.png')} style={styles.profileImage} />
                         </TouchableOpacity>
                         <View style={styles.userInfo}>
                             <Text style={styles.userName}>{item?.name}</Text>
@@ -41,6 +43,7 @@ export const PhoneCallScreen = ({ navigation }: any) => {
                     </View>
                 )}
             />
+           <Spinner visible={loading} textContent={'Loading...'} textStyle={{ color: '#FFF' }} />
         </View>
     );
 };

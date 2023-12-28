@@ -34,7 +34,7 @@ const LoginScreen = ({ navigation }: LoginProps) => {
       <Text style={styles.title}>Welcome to Haklao G, its nice to see you</Text>
       <GoogleSigninButton style={styles.googleButton} size={GoogleSigninButton.Size.Wide} color={GoogleSigninButton.Color.Dark} onPress={() => handleGoogleAuth()} />
       <View>
-        <Text style={styles.subTitle}>Don't worry, we will never user your data withiout your permission</Text>
+        <Text style={styles.subTitle}>Don't worry, we will never user your data without your permission</Text>
         <Text style={styles.subTitle}>By continuing, you agree to Haklao G Terms of service & Pricacy Policy</Text>
       </View>
       <TouchableOpacity onPress={() => navigation.replace('Register')}>

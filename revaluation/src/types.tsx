@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-export type RootStackParamList = {Home: undefined,Login: undefined,Register: undefined,LocationSelection:undefined,Map:undefined,VideoCall: undefined,Practice:undefined,VoiceCall: undefined,Profile: undefined,LocationPermission: undefined,NearByPeople: undefined,UserProfile:undefined,VerificationPending:undefined};
+export type RootStackParamList = {Home: undefined,Login: undefined,Register: undefined,LocationSelection:undefined,Map:undefined,VideoCall: undefined,Practice:undefined,VoiceCall: undefined,Profile: undefined,LocationPermission: undefined,NearByPeople: undefined,UserProfile:undefined,VerificationPending:undefined,NoInternet:undefined,Blocked:undefined};
 
 export type HomeProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 export type Profile = NativeStackScreenProps<RootStackParamList, 'Profile'>;

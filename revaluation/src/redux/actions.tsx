@@ -47,6 +47,7 @@ export const loadingSuccessAction = (dispatch: any) => {
 }
 
 export const getNetworkStatusAction = (status: Boolean, dispatch: any) => {
+    console.log('status in action',status)
     dispatch(getNetworkStatusSuccess(status))
 }
 
