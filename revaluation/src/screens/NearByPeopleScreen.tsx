@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import Spinner from 'react-native-loading-spinner-overlay';
 import { useSelector } from 'react-redux';
 // import { useNavigation } from '@react-navigation/native';
 
 const NearByPeopleScreen = () => {
+  const loading = useSelector((store: any) => store.loading);
   const user = useSelector((store: any) => store.user);
   const users = useSelector((store: any) => store.users);
   const [isInState, setIsInState] = React.useState(true); // By default, show people in the state
@@ -34,9 +36,7 @@ const NearByPeopleScreen = () => {
           <Text style={styles.filterButtonText}>People Outside Your State</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.title}>
-        {isInState ? 'People in Your State' : 'People Outside Your State'}
-      </Text>
+      <Text style={styles.title}>People {isInState?'in':'Outside'} Your State</Text>
       {filteredUsers?.length < 1 && <Text>Currently in your state there are not people who are using this app, don't looe hope, soon they will be avaibable</Text>}
       <FlatList data={filteredUsers} keyExtractor={(user) => user._id.toString()}
         renderItem={({ item }) => (
@@ -56,6 +56,7 @@ const NearByPeopleScreen = () => {
           </View>
         )}
       />
+      <Spinner visible={loading} textContent={'Loading...'} textStyle={{ color: '#FFF' }} />
     </View>
   );
 };

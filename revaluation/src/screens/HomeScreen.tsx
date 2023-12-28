@@ -5,37 +5,51 @@ import { getTokenAction, getUserDetailsAction, getUsersDetailsAction } from '../
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
+import { fetch } from '@react-native-community/netinfo';
 
 type HomeProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-const HomeScreen = ({navigation}:HomeProps) => {
+const HomeScreen = ({ navigation }: HomeProps) => {
   const user = useSelector((store: any) => store.user);
   const users = useSelector((store: any) => store.users);
   const dispatch = useDispatch();
 
-  React.useEffect(() => {
-    const need = async () => {
-      const t = await AsyncStorage.getItem('token');
-      getTokenAction(t, dispatch);
-      if (!t) return navigation.replace('Login');
-      else {
-        if (!user) getUserDetailsAction(dispatch).then((data) => {
+  const mainLogic = async () => {
+    const isConnected = (await fetch()).isConnected;
+    if (!isConnected) return navigation.replace('NoInternet');
+    const t = await AsyncStorage.getItem('token');
+    getTokenAction(t, dispatch);
+    if (!t) return navigation.replace('Login');
+    else {
+      if (!user) {
+        try {
+          const data = await getUserDetailsAction(dispatch);
           AsyncStorage.setItem('user', JSON.stringify(data))
-          if(!data?.verified) return navigation.replace('VerificationPending');
-        }).catch((err) =>Alert.alert(err.message,'No internet connection, Check your internet'));;
-        if (!users) getUsersDetailsAction(dispatch).then(data => AsyncStorage.setItem('users', JSON.stringify(data)));
-        if(user && !user?.verified) return navigation.replace('VerificationPending');
+          if (data?.blocked && data?.blockedReason) return navigation.replace('Blocked');
+          if (!data?.verified) return navigation.replace('VerificationPending');
+        } catch (error: any) {
+          Alert.alert(error.message, 'No internet connection, Check your internet');
+        }
       }
+      if (!users) {
+        const data = await getUsersDetailsAction(dispatch);
+        AsyncStorage.setItem('users', JSON.stringify(data));
+      }
+
+      if (user && !user?.verified) return navigation.replace('VerificationPending');
     }
-    need();
+  }
+
+  React.useEffect(() => {
+    mainLogic();
   }, []);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to "HaklaoG" the Stammer Community App</Text>
       <Text style={styles.subtitle}>Connect with other stammering users and do practice to manage your stammering.</Text>
-      <Text style={styles.subtitle2}>Remeber its your way to speak not an issue.</Text>
-      <Image style={styles.image} source={require('../../assets/logo.png')} alt='logo'/>
+      <Text style={styles.subtitle2}>Remeber stammering is another way to speak not a problem.</Text>
+      <Image style={styles.image} source={require('../../assets/logo.png')} alt='logo' />
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Practice')}>
         <Text style={styles.buttonText}>Start Practice</Text>
       </TouchableOpacity>
@@ -60,9 +74,9 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   subtitle2: {
-    fontSize:18,
+    fontSize: 18,
     marginBottom: 32,
-    color:'#d764e9'
+    color: '#d764e9'
   },
   button: {
     backgroundColor: 'blue',
@@ -76,9 +90,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  image:{
-    height:180,
-    marginBottom:20
+  image: {
+    height: 180,
+    marginBottom: 20
   }
 });
 

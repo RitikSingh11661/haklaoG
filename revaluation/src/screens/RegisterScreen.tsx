@@ -4,7 +4,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootStackParamList } from '../types';
 import { signupAction } from '../redux/actions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { launchCamera } from 'react-native-image-picker';
 import { accessKeyId, secretAccessKey, region, bucketName } from '@env';
@@ -18,7 +18,7 @@ import { webClientId } from '@env';
 type RegisterProps = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
 const RegisterScreen = ({ navigation }: RegisterProps) => {
-  const [loading, setLoading] = React.useState(false);
+  const loading = useSelector((store: any) => store.loading);
   const dispatch = useDispatch();
   const [videoLoading, setVideoLoading] = React.useState(false);
   const formRef = React.useRef({ name: '', email: '', phone: '', kycVideo: '' });
@@ -28,18 +28,15 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
   const s3 = new AWS.S3(credential);
 
   const handleRegister = async () => {
-    if (!formRef.current.name || !formRef.current.phone)return Alert.alert('Error', 'Please fill your Name & Phone No. filled');
+    if (!formRef.current.name || !formRef.current.phone)return Alert.alert('Must Filled', 'Please fill your Name & Phone Number');
     if (formRef.current.phone.length<10)return Alert.alert('Invalid Phone Number', 'Please enter a valid 10 digits phone no.');
     if (!formRef.current.kycVideo)return Alert.alert('Introduction Video', 'Please record your introduction video');
     if(!formRef.current.email)return Alert.alert('Verify Email', 'Please verify your email by Google');
-    setLoading(true);
     try {
       const data = await signupAction(formRef.current, dispatch);
       await AsyncStorage.setItem('token', data?.token);
-      setLoading(false);
       navigation.replace('VerificationPending');
     } catch (error: any) {
-      setLoading(false);
       Alert.alert(error, error?.msg ? error.msg : error.message);
     }
   };
@@ -70,7 +67,6 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
       setIsVerified(true);
       await GoogleSignin.signOut();
     } catch (error: any) {
-      console.log('error', error)
       Alert.alert('Error', error?.msg ? error.msg : error.message);
     }
   }

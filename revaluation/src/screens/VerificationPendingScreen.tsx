@@ -15,10 +15,10 @@ const VerificationPendingScreen = ({navigation}:any) => {
     return (
         <View style={styles.container}>
             <Image source={require('../../assets/logo.png')} style={styles.logo} />
-            <Text style={styles.heading}>Account Created Successfully!</Text>
+            <Text style={styles.heading}>Account Created Successfully! 🎉</Text>
             <Text style={styles.message}>Thank you for registering. Your introduction video is under verification.</Text>
             <Text style={styles.message}>Once verified, you will be able to access all features of the app.</Text>
-            <Text style={styles.message}>We appreciate your patience.</Text>
+            <Text style={styles.message}>We appreciate your patience. 🙏</Text>
         </View>
     );
 };

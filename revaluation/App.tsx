@@ -21,6 +21,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { NoInternetScreen } from './src/screens/NoInternetScreen';
 import VerificationPendingScreen from './src/screens/VerificationPendingScreen';
 import SplashScreen from 'react-native-splash-screen';
+import BlockScreen from './src/screens/blockScreen';
 
 const App = () => {
   const Tab = createBottomTabNavigator();
@@ -28,35 +29,37 @@ const App = () => {
   const user = useSelector((store: any) => store.user);
   const token = useSelector((store: any) => store.token);
   const dispatch = useDispatch();
-  const [isEnabledCall, setIsEnabledCall] = useState<boolean>(user?.availableForCall||false);
-  const [isConnected, setIsConnected] = React.useState<any>(true);
+  const [isEnabledCall, setIsEnabledCall] = useState<boolean>(user?.availableForCall || false);
 
-  const toggleSwitch = async() => {
+  const homeIcon = require('./assets/tabBar/home.png');
+  const homeFocusedIcon = require('./assets/tabBar/home2.png');
+  const groupIcon = require('./assets/tabBar/group-users.png');
+  const groupFocusedIcon = require('./assets/tabBar/group-users2.png');
+  const phoneCallIcon = require('./assets/tabBar/phone-call.png');
+  const phoneCallFocusedIcon = require('./assets/tabBar/phone-call2.png');
+  const settingsIcon = require('./assets/tabBar/settings.png');
+  const settingsFocusedIcon = require('./assets/tabBar/settings2.png');
+
+  const toggleSwitch = async () => {
     try {
       await updateUserDetailsAction(user?._id, { availableForCall: !isEnabledCall }, dispatch);
       // Alert.alert('Status updated successfully',`Hi ${user.name} , you are now ${user?.availableForCall?'Online':'Offline'}!`)
       setIsEnabledCall(!isEnabledCall);
-    } catch (err:any) {
-      Alert.alert(err.message,'No internet connection, Check your internet')
+    } catch (err: any) {
+      Alert.alert(err.message, 'No internet connection, Check your internet')
     }
   }
 
   // Define custom icons for each tab
   const getTabBarIcon = (route: any, focused: any) => {
-    let iconName = '';
-
-    if (route.name === 'Home Page') {
-      iconName = focused ? 'https://i.ibb.co/p4yQt4t/home.png' : 'https://i.ibb.co/bWzq4W9/home-1.png';
-    } else if (route.name === 'Near By People') {
-      iconName = focused ? 'https://i.ibb.co/zn93wPc/group-users-1.png' : 'https://i.ibb.co/y4Rvjgg/group-users.png';
-    } else if (route.name === 'Practice') {
-      iconName = focused ? 'https://i.ibb.co/BcWhPVR/phone-call-1.png' : 'https://i.ibb.co/mTcZC3L/phone-call.png';
-    } else if (route.name === 'Settings') {
-      iconName = focused ? 'https://i.ibb.co/Rv54Zqb/settings2.png' : 'https://i.ibb.co/jRjJRBF/settings.png';
-    }
+    let iconName;
+    if (route.name === 'Home Page') iconName = focused ? homeFocusedIcon : homeIcon;
+    else if (route.name === 'Near By People') iconName = focused ? groupFocusedIcon : groupIcon;
+    else if (route.name === 'Practice') iconName = focused ? phoneCallFocusedIcon : phoneCallIcon;
+    else if (route.name === 'Settings') iconName = focused ? settingsFocusedIcon : settingsIcon;
 
     // You can return an Image component with the appropriate icon source
-    return <Image source={{ uri: iconName }} alt='tab nav icons' style={{ width: 30, height: 30 }} />;
+    return <Image source={iconName} alt='tab nav icons' style={{ width: 30, height: 30 }} />;
   };
 
   const HeaderRightSwitch = () => (
@@ -69,12 +72,12 @@ const App = () => {
         value={isEnabledCall}
         style={{ marginRight: 10, width: 45 }}
       />
-      <Text>{isEnabledCall?'Online':'Offline'}</Text>
+      <Text>{isEnabledCall ? 'Online' : 'Offline'}</Text>
     </View>
   );
 
   const TabNavigator = () => (
-    <Tab.Navigator screenOptions={({route})=>({tabBarIcon:({focused})=>getTabBarIcon(route, focused)})}>
+    <Tab.Navigator screenOptions={({ route }) => ({ tabBarIcon: ({ focused }) => getTabBarIcon(route, focused) })}>
       <Tab.Screen name="Home Page" options={{ headerTitle: 'Home', headerTitleStyle: { fontWeight: 'bold' }, headerRight: () => HeaderRightSwitch() }} component={HomeScreen} />
       <Tab.Screen name="Practice" options={{ headerTitle: 'Phone Call', headerTitleStyle: { fontWeight: 'bold' }, headerRight: () => HeaderRightSwitch() }} component={PhoneCallScreen} />
       <Tab.Screen name="Near By People" options={{ headerTitle: 'Near By People', headerTitleStyle: { fontWeight: 'bold' }, headerRight: () => HeaderRightSwitch() }} component={NearByPeopleScreen} />
@@ -89,21 +92,19 @@ const App = () => {
       const status = state.isConnected;
       if (status) {
         getNetworkStatusAction(status, dispatch);
-        setIsConnected(status);
-        if(token)getUserDetailsAction(dispatch);
-      }else setIsConnected(false);
+        if (token) getUserDetailsAction(dispatch);
+      }
     });
     subscribe();
     SplashScreen.hide();
-    // return () => { updateUserDetailsAction(user?._id, { availableForCall: false }, dispatch); }
   }, []);
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     setIsEnabledCall(user?.availableForCall);
-  },[user?.availableForCall])
-  
+  }, [user?.availableForCall])
 
-  if (!isConnected) return <NoInternetScreen />;
+
+  // if (!isConnected) return <NoInternetScreen />;
 
   return (
     <NavigationContainer>
@@ -119,6 +120,8 @@ const App = () => {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="VerificationPending" component={VerificationPendingScreen} />
+        <Stack.Screen name="Blocked" component={BlockScreen} />
+        <Stack.Screen name="NoInternet" component={NoInternetScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   )

@@ -7,8 +7,10 @@ import { accessKeyId, secretAccessKey, region, bucketName } from '@env';
 import uuid from 'react-native-uuid';
 import { launchCamera } from 'react-native-image-picker';
 import { toByteArray } from 'base64-js';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const ProfileScreen = ({ navigation }: any) => {
+  const loading = useSelector((store: any) => store.loading);
   const user = useSelector((store: any) => store.user);
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false)
@@ -151,6 +153,7 @@ const ProfileScreen = ({ navigation }: any) => {
       <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center' }}>
         <Text onPress={handleLogout} style={{ color: 'red', fontWeight: 'bold', marginVertical: 10 }}>LOGOUT</Text>
       </TouchableOpacity>
+      <Spinner visible={loading} textContent={'Loading...'} textStyle={{ color: '#FFF' }} />
     </ScrollView>
   );
 };
