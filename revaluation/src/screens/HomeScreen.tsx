@@ -37,6 +37,7 @@ const HomeScreen = ({ navigation }: HomeProps) => {
       }
 
       if (user && !user?.verified) return navigation.replace('VerificationPending');
+      if (user?.blocked && user?.blockedReason) return navigation.replace('Blocked');
     }
   }
 
