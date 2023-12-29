@@ -27,11 +27,15 @@ userRoutes.post("/add", async (req, res) => {
     try {
         if (!email || !name || !kycVideo) return res.status(400).send({ msg: "All the fields are required" });
         const preCheck = await userModel.findOne({email});
-        if (preCheck) return res.status(400).send({ msg: "User already registered" });
-        const newUser = new userModel({ email, name, phone, kycVideo });
-        const user = await newUser.save();
-        const token = jwt.sign({ "userId": user._id },process.env.secretKey);
-        res.status(200).send({ msg: "User has been registered", status: "success", token });
+        if (preCheck){
+            const token = jwt.sign({ "userId": preCheck._id },process.env.secretKey);
+            return res.status(200).send({msg:"User already registered, Logging into existing account",status: "success", token});
+        }else{
+            const newUser = new userModel({ email, name, phone, kycVideo });
+            const user = await newUser.save();
+            const token = jwt.sign({ "userId": user._id },process.env.secretKey);
+            res.status(200).send({ msg: "User has been registered", status: "success", token });
+        }
     } catch (error) {
         console.log('error',error)
         res.status(400).send({ msg: "Error while registering user" });
@@ -40,7 +44,6 @@ userRoutes.post("/add", async (req, res) => {
 
 userRoutes.post("/login", async (req, res) => {
     const {email} = req.body;
-    console.log('req.body',req.body);
     try {
         if (!email) return res.status(400).send({ msg: "Email is required" });
         const user = await userModel.findOne({email});
