@@ -47,7 +47,7 @@ userRoutes.post("/login", async (req, res) => {
     try {
         if (!email) return res.status(400).send({ msg: "Email is required" });
         const user = await userModel.findOne({email});
-        if (!user) return res.status(400).send({ msg: "User not found" });
+        if (!user) return res.status(200).send({ msg: "User not found" });
         const token = jwt.sign({ "userId": user._id },process.env.secretKey);
         res.status(200).send({ msg: "User logged in", status: "success", token, verified: user.verified });
     } catch (e) {
