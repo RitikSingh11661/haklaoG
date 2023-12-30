@@ -29,7 +29,7 @@ userRoutes.post("/add", async (req, res) => {
         const preCheck = await userModel.findOne({email});
         if (preCheck){
             const token = jwt.sign({ "userId": preCheck._id },process.env.secretKey);
-            return res.status(200).send({msg:"User already registered, Logging into existing account",status: "success", token});
+            return res.status(200).send({msg:"User already registered, Logging into existing account",status: "success", token,verified: preCheck.verified});
         }else{
             const newUser = new userModel({ email, name, phone, kycVideo });
             const user = await newUser.save();
