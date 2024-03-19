@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View} from 'react-native';
+import { Alert, StyleSheet, View} from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { loadingRequestAction, loadingSuccessAction } from '../redux/actions';
+import { getUsersDetailsAction } from '../redux/actions';
 
 const MapScreen = () => {
   const user = useSelector((store: any) => store.user);
@@ -23,15 +23,18 @@ const MapScreen = () => {
     }
   }
 
-  useEffect(() => {
-    loadingRequestAction(dispatch);
+  const getUpdatedUsers=async()=>{
     try {
+      await getUsersDetailsAction(dispatch);
       const userMarkers = users.map((userObj: any) => renderUserMarker(userObj));
       Promise.all(userMarkers).then(markers => setMarkers(markers));
     } catch (error) {
-      console.log('error', error)
+      Alert.alert('Unable to get locations','There is an error, please try again later or contact us')
     }
-    setTimeout(() => loadingSuccessAction(dispatch), 3500)
+  }
+
+  useEffect(() => {
+   getUpdatedUsers();
   }, []);
 
   return (

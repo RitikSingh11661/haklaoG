@@ -58,10 +58,11 @@ export const signupAction = async (user: Object, dispatch: any) => {
     dispatch(SignupRequest());
     try {
         const {data} = await axios.post(`${url}/users/add`, user);
-        dispatch(SignupSuccess(data))
+        await AsyncStorage.setItem('token', data?.token);
+        dispatch(SignupSuccess(data?.token));
         return data;
     } catch (error) {
-        console.log('error', error);
+        console.log('error',error)
         dispatch(SignupFailure(error))
         throw error;
     }
@@ -71,7 +72,7 @@ export const loginAction = async (user: Object, dispatch: any) => {
     dispatch(loginRequest());
     try {
         const { data } = await axios.post(`${url}/users/login`, user);
-        await AsyncStorage.setItem('token', data?.token);
+        if(!(data.msg=="User not found"))await AsyncStorage.setItem('token', data?.token);
         dispatch(loginSuccess(data?.token));
         return data;
     } catch (error) {
