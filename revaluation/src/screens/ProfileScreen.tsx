@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, Alert, Pressable, ScrollView, ActivityIndicator, Linking } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutAction, updateUserDetailsAction } from '../redux/actions';
@@ -13,9 +13,9 @@ const ProfileScreen = ({ navigation }: any) => {
   const loading = useSelector((store: any) => store.loading);
   const user = useSelector((store: any) => store.user);
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(false)
-  const [bio, setBio] = useState(user?.bio);
-  const [isEditBio, setIsEditBio] = useState(false);
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [bio, setBio] = React.useState(user?.bio);
+  const [isEditBio, setIsEditBio] = React.useState(false);
 
   const credential = { accessKeyId, secretAccessKey, region, signatureVersion: "v4" }
   const s3 = new AWS.S3(credential);
@@ -29,33 +29,33 @@ const ProfileScreen = ({ navigation }: any) => {
       setIsEditBio(prev => !prev)
       Alert.alert('Your Profile has been updated', data.msg);
     } catch (error: any) {
-      Alert.alert('Error', error?.message?error.message:error.msg)
+      Alert.alert('Error', error?.message ? error.message : error.msg)
     }
   };
 
   const handleSelectImage = async () => {
-   try {
-    const image:any = await launchCamera({mediaType:'photo',includeBase64:true})
-    if (!image?.didCancel) {
-      const filename = `${user?._id}_${uuid.v4()}-image.jpeg`;
-      setIsLoading(prev => !prev);
-      const arrayBuffer = toByteArray(image?.assets[0]?.base64);
-      const params = { Bucket: bucketName, Key: filename, Body: arrayBuffer, ContentType: `image/jpeg` };
-      const { Location } = await s3.upload(params).promise();
-      updateUserDetailsAction(user._id, { image:Location}, dispatch)
-      setIsLoading(prev => !prev)
+    try {
+      const image: any = await launchCamera({ mediaType: 'photo', includeBase64: true })
+      if (!image?.didCancel) {
+        const filename = `${user?._id}_${uuid.v4()}-image.jpeg`;
+        setIsLoading(prev => !prev);
+        const arrayBuffer = toByteArray(image?.assets[0]?.base64);
+        const params = { Bucket: bucketName, Key: filename, Body: arrayBuffer, ContentType: `image/jpeg` };
+        const { Location } = await s3.upload(params).promise();
+        updateUserDetailsAction(user._id, { image: Location }, dispatch)
+        setIsLoading(prev => !prev)
       }
-    } catch (error:any) {
-      Alert.alert('Error while capturing image:', error?.message?error.message:error.msg);
+    } catch (error: any) {
+      Alert.alert('Error while capturing image:', error?.message ? error.message : error.msg);
     }
   }
 
-  const handleContact=async()=>{
+  const handleContact = async () => {
     try {
       await Linking.canOpenURL('mailto:ritikofficial11661@gmail.com')
       await Linking.openURL('mailto:ritikofficial11661@gmail.com')
     } catch (error) {
-      Alert.alert('Not able to contact',"Oops! It seems there's no email app set up on your device to handle this request. Please check your device settings and make sure you have an email app installed.")
+      Alert.alert('Not able to contact', "Oops! It seems there's no email app set up on your device to handle this request. Please check your device settings and make sure you have an email app installed.")
     }
   }
 
@@ -70,7 +70,7 @@ const ProfileScreen = ({ navigation }: any) => {
       <View style={styles.profileContainer}>
         <View style={{ flexDirection: 'row' }}>
           <View style={{ position: 'relative' }}>
-            <Image source={user?.image?{uri:user.image}:require('../../assets/user.png')} style={styles.image} />
+            <Image source={user?.image ? { uri: user.image } : require('../../assets/user.png')} style={styles.image} />
             {isLoading && <ActivityIndicator style={styles.loadingIndicator} size="large" color="grey" />}
           </View>
           <TouchableOpacity onPress={handleSelectImage}>
@@ -78,6 +78,7 @@ const ProfileScreen = ({ navigation }: any) => {
           </TouchableOpacity>
         </View>
         <Text style={styles.profileName}>{user?.name}</Text>
+        <Text style={styles.profileState}>{user?.location[user?.location?.length-1]?.state}</Text>
         {user?.verified && (
           <View style={styles.verifiedContainer}>
             <Text style={styles.verifiedText}>Verified by {user?.verifiedBy}</Text>
@@ -140,10 +141,10 @@ const ProfileScreen = ({ navigation }: any) => {
           <Text style={{ fontWeight: 'bold', color: '#333030' }}>Share App</Text>
         </View>
         <TouchableOpacity onPress={handleContact}>
-        <View style={styles.supportDiv}>
-          <Image source={require('../../assets/contact-us.png')} style={{ width: 25, height: 25 }} alt='map markup' />
-          <Text style={{ fontWeight: 'bold', color: '#333030' }}>Contact Us</Text>
-        </View>
+          <View style={styles.supportDiv}>
+            <Image source={require('../../assets/contact-us.png')} style={{ width: 25, height: 25 }} alt='map markup' />
+            <Text style={{ fontWeight: 'bold', color: '#333030' }}>Contact Us</Text>
+          </View>
         </TouchableOpacity>
         <View style={styles.supportDiv}>
           <Image source={require('../../assets/about-us.png')} style={{ width: 25, height: 25 }} alt='map markup' />
@@ -175,7 +176,7 @@ const styles = StyleSheet.create({
     color: '#6c6a6a',
     fontWeight: 'bold'
   },
-  profileEmail: {
+  profileState: {
     fontSize: 16,
     marginBottom: 16,
     color: '#666',

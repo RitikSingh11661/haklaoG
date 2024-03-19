@@ -17,6 +17,9 @@ const reducer = (state = getInitialState(), { type, payload }: { type: string; p
     case actionTypes.LOGIN_REQUEST: return { ...state, loading: true };
     case actionTypes.LOGIN_SUCCESS: return { ...state, token: payload, loading: false };
     case actionTypes.LOGIN_FAILURE: return { ...state, error: payload, loading: false };
+    case actionTypes.SIGNUP_REQUEST: return { ...state, loading: true };
+    case actionTypes.SIGNUP_SUCCESS: return { ...state, token: payload, loading: false };
+    case actionTypes.SIGNUP_FAILURE: return { ...state, error: payload, loading: false };
     case actionTypes.GET_NETWORK_STATUS_SUCCESS: return { ...state, networkStatus: payload};
     case actionTypes.GET_TOKEN_SUCCESS: return { ...state, token: payload, loading: false };
     case actionTypes.GET_USER_DETAILS_REQUEST: return { ...state, loading: true };

@@ -19,7 +19,9 @@ const LoginScreen = ({ navigation }: LoginProps) => {
       const userInfo = await GoogleSignin.signIn();
       await GoogleSignin.signOut();
       const data = await loginAction({ email: userInfo?.user?.email }, dispatch);
-      navigation.replace(data?.verified ? 'Home' : 'VerificationPending');
+      if(data.msg=="User not found"){
+        Alert.alert('User not exist','Your account is not exist in our app, please register');
+      }else navigation.replace(data?.verified ? 'Home' : 'VerificationPending');
     } catch (error: any) {
       Alert.alert('Error', error?.msg ? error.msg : error.message);
     }

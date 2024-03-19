@@ -15,8 +15,8 @@ const UserProfileScreen = ({ route, navigation }: any) => {
         <Text style={styles.userName}>{user?.name}</Text>
         <Text style={styles.userBio}>{user?.bio}</Text>
       </View>
-      <View style={styles.details}>
-        <Text style={styles.detailText}>State: {user?.location[user?.location.length - 1].state}</Text>
+      <View style={styles.details}>             
+        <Text style={styles.detailText}>State: {user?.location[user?.location?.length - 1]?.state}</Text>
       </View>
       <TouchableOpacity style={styles.connectButton} onPress={() => navigation.goBack()}>
         <Text style={styles.connectButtonText}>Go Back</Text>

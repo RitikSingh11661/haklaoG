@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootStackParamList } from '../types';
 import { signupAction } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -34,10 +33,11 @@ const RegisterScreen = ({ navigation }: RegisterProps) => {
     if(!formRef.current.email)return Alert.alert('Verify Email', 'Please verify your email by Google');
     try {
       const data = await signupAction(formRef.current, dispatch);
-      await AsyncStorage.setItem('token', data?.token);
-      navigation.replace('VerificationPending');
+      if(data.msg=="User has been registered")Alert.alert('Welcome in our Stammer Community','Your account has been created successfully');
+      else Alert.alert('Account already exist','You have already been registered with us, Welcome back');
+      navigation.replace(data?.verified?'Home':'VerificationPending');
     } catch (error: any) {
-      Alert.alert(error, error?.msg ? error.msg : error.message);
+      Alert.alert('Error', error?.msg ? error.msg : error.message);
     }
   };
 
