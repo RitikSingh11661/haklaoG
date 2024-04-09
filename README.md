@@ -1,4 +1,4 @@
-# HalklaoG
+# Halklao G
 
 ![HalklaoG Logo](https://stammer.in/wp-content/uploads/2016/10/Logo.jpg)
 
@@ -66,12 +66,12 @@ Frontend (.env file)
 If you encounter any issues or have suggestions, feel free to <a href="https://github.com/your-username/HalklaoG/issues" target="blank">create an issue</a>. We appreciate your feedback!
 
 ### License
-This app is open source feel free to contribute, no permission is required from our end.
+This app is open-source feel free to contribute, no permission is required from our end.
 
-### Sponsored by The Indian Stammering Association 🗣️🌐
+### Created for Stammering Community 🗣️🌐
 Connect with us: <a href="mailto:ritiksingh11661@gmail.com" target="blank">ritikofficial11661@gmail.com</a>
 
-Your support and contributions are vital to the success of this project. Thank you for being part of the HalklaoG community! 🙌✨
+Your support and contributions are vital to the success of this project. Thank you for being part of the Halklao G community! 🙌✨
 
 ```bash
 git clone https://github.com/ritiksingh11661/HalklaoG.git
